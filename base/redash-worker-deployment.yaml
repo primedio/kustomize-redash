@@ -1,0 +1,70 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: redash-worker
+  labels:
+    app.kubernetes.io/name: redash-worker
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: redash-worker
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: redash-worker
+    spec:
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: redash
+          image: redash/redash
+          imagePullPolicy: IfNotPresent
+          command: ["/app/bin/docker-entrypoint"]
+          args: ["scheduler"]
+          ports:
+            - name: "insights"
+              containerPort: 5000
+              protocol: TCP
+          readinessProbe:
+            exec:
+             command:
+             - pgrep
+             - -f
+             - worker
+            initialDelaySeconds: 15
+            timeoutSeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          livenessProbe:
+            exec:
+             command:
+             - pgrep
+             - -f
+             - worker
+            initialDelaySeconds: 15
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          env:
+            - name: PYTHONUNBUFFERED
+              value: "0"
+            - name: REDASH_LOG_LEVEL
+              value: $(loglevel)
+            - name: REDASH_REDIS_URL
+              value: $(redis-url)
+            - name: REDASH_DATABASE_URL
+              value: $(database-url)
+            - name: REDASH_COOKIE_SECRET
+              value: $(cookie-secret)
+            - name: QUEUES
+              value: $(queues)
+            - name: WORKERS_COUNT
+              value: $(workers-count)
+            - name: REDASH_QUERY_TIMEOUT
+              value: $(query-timeout)
+            - name: REDASH_SECRET_KEY
+              value: $(secret-key)
+          resources: {}

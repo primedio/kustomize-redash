@@ -1,0 +1,29 @@
+apiVersion: apps/v1beta2
+kind: Pod
+metadata:
+  name: redash-init
+spec:
+  restartPolicy: Never
+  terminationGracePeriodSeconds: 30
+  containers:
+    - name: redash
+      image: redash/redash
+      imagePullPolicy: IfNotPresent
+      command: ["/app/bin/docker-entrypoint"]
+      args: ["create_db"]
+      env:
+        - name: PYTHONUNBUFFERED
+          value: "0"
+        - name: REDASH_LOG_LEVEL
+          value: $(loglevel)
+        - name: REDASH_HOST
+          value: $(host)
+        - name: REDASH_REDIS_URL
+          value: $(redis-url)
+        - name: REDASH_DATABASE_URL
+          value: $(database-url)
+        - name: REDASH_COOKIE_SECRET
+          value: $(cookie-secret)
+        - name: REDASH_SECRET_KEY
+          value: $(secret-key)
+      resources: {}      

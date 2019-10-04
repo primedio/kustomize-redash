@@ -1,0 +1,7 @@
+varReference:
+- path: spec/replicas
+  kind: Deployment
+- path: spec/template/spec/containers/0/env
+  kind: Deployment
+- path: spec/tls/hosts
+  kind: Ingress

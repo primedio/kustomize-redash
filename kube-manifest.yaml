@@ -1,0 +1,11 @@
+apiVersion: manifest.k8s.io/v1alpha1
+kind: Manifest
+metadata:
+  name: redash
+description: Run Redash on Kubernetes in production mode.
+resources:
+  - base/ingress.yaml
+  - base/redash-init.yaml
+  - base/redash-web-deployment.yaml
+  - base/redash-worker-deployment.yaml
+  - base/service.yaml

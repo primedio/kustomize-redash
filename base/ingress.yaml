@@ -1,0 +1,19 @@
+kapiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: redash
+  labels:
+    app.kubernetes.io/component: redash-web
+spec:
+  tls:
+    - hosts:
+        - $(host)
+      secretName: $(tsl-secret)
+  rules:
+    - host: $(host)
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: redash-web
+              servicePort: 5000

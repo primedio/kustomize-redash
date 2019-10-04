@@ -1,0 +1,23 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: default
+
+commonLabels:
+  app.kubernetes.io/version: v7.0.0-1.0.0
+  app.kubernetes.io/managed-by: kustomize
+  app.kubernetes.io/part-of: redash
+
+bases:
+  - base
+
+images:
+  - name: redash/redash
+    newTag: 7.0.0.b18042
+    digest: sha256:3cc82e7538902a0a170b05356b8b8ce6a87d7c4e7cdcc8e974fd2fc3a4474b1a
+
+replicas:
+  - name: redash-web
+    count: 2
+  - name: redash-worker
+    count: 3

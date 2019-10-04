@@ -1,0 +1,130 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ingress.yaml
+  - service.yaml
+  - redash-web-deployment.yaml
+  - redash-worker-deployment.yaml
+  - redash-init.yaml
+
+configMapGenerator:
+  - name: redash-config
+    env: redash-config.properties
+
+vars:
+  - name: loglevel
+    objref:
+      kind: ConfigMap
+      name: redash-config
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.loglevel
+  - name: redis-url
+    objref:
+      kind: ConfigMap
+      name: redash-config
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.redis-url
+  - name: database-url
+    objref:
+      kind: ConfigMap
+      name: redash-config
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.database-url
+  - name: cookie-secret
+    objref:
+      kind: ConfigMap
+      name: redash-config
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.cookie-secret
+  - name: web-workers
+    objref:
+      kind: ConfigMap
+      name: redash-config
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.web-workers
+  - name: query-timeout
+    objref:
+      kind: ConfigMap
+      name: redash-config
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.query-timeout
+  - name: secret-key
+    objref:
+      kind: ConfigMap
+      name: redash-config
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.secret-key
+  - name: workers-count
+    objref:
+      kind: ConfigMap
+      name: redash-config
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.workers-count
+  - name: queues
+    objref:
+      kind: ConfigMap
+      name: redash-config
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.queues
+  - name: host
+    objref:
+      kind: ConfigMap
+      name: redash-config
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.host
+  - name: tsl-secret
+    objref:
+      kind: ConfigMap
+      name: redash-config
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.tsl-secret
+  - name: mail-server
+    objref:
+      kind: ConfigMap
+      name: redash-config
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.mail-server
+  - name: mail-server-port
+    objref:
+      kind: ConfigMap
+      name: redash-config
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.mail-server-port
+  - name: mail-server-username
+    objref:
+      kind: ConfigMap
+      name: redash-config
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.mail-server-username
+  - name: mail-server-password
+    objref:
+      kind: ConfigMap
+      name: redash-config
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.mail-server-password
+  - name: mail-server-default-sender
+    objref:
+      kind: ConfigMap
+      name: redash-config
+      apiVersion: v1
+    fieldref:
+      fieldpath: data.mail-server-default-sender
+
+configurations:
+  - redash-config.yaml

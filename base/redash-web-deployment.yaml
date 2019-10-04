@@ -1,0 +1,78 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: redash-web
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: redash-web
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: redash-web
+    spec:
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: redash
+          image: redash/redash
+          imagePullPolicy: IfNotPresent
+          command: ["/app/bin/docker-entrypoint"]
+          args: ["server"]
+          ports:
+            - name: "redash"
+              containerPort: 5000
+              protocol: TCP
+          readinessProbe:
+            exec:
+             command:
+             - pgrep
+             - -f
+             - gunicorn
+            initialDelaySeconds: 30
+            timeoutSeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          livenessProbe:
+            exec:
+             command:
+             - pgrep
+             - -f
+             - gunicorn
+            initialDelaySeconds: 30
+            timeoutSeconds: 1
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          env:
+            - name: PYTHONUNBUFFERED
+              value: "0"
+            - name: REDASH_LOG_LEVEL
+              value: $(loglevel)
+            - name: REDASH_HOST
+              value: $(host)
+            - name: REDASH_REDIS_URL
+              value: $(redis-url)
+            - name: REDASH_DATABASE_URL
+              value: $(database-url)
+            - name: REDASH_MAIL_SERVER
+              value: $(mail-server)
+            - name: REDASH_MAIL_PORT
+              value: $(mail-server-port)
+            - name: REDASH_MAIL_USERNAME
+              value: $(mail-server-username)
+            - name: REDASH_MAIL_PASSWORD
+              value: $(mail-server-password)
+            - name: REDASH_MAIL_DEFAULT_SENDER
+              value: $(mail-server-default-sender)
+            - name: REDASH_COOKIE_SECRET
+              value: $(cookie-secret)
+            - name: REDASH_WEB_WORKERS
+              value: $(web-workers)
+            - name: REDASH_QUERY_TIMEOUT
+              value: $(query-timeout)
+            - name: REDASH_SECRET_KEY
+              value: $(secret-key)
+          resources: {}      

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: redash
+  labels:
+    app.kubernetes.io/component: redash-web
+spec:
+  type: ClusterIP
+  ports:
+    - port: 5000
+      targetPort: 5000
+      protocol: TCP
+      name: "redash"
+  selector:
+    app.kubernetes.io/name: redash
