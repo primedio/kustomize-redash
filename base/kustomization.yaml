@@ -5,7 +5,9 @@ resources:
   - ingress.yaml
   - service.yaml
   - redash-web-deployment.yaml
-  - redash-worker-deployment.yaml
+  - redash-scheduledworker-deployment.yaml
+  - redash-scheduled-deployment.yaml
+  - redash-adhocworker-deployment.yaml
   - redash-init.yaml
 
 configMapGenerator:
@@ -69,13 +71,6 @@ vars:
       apiVersion: v1
     fieldref:
       fieldpath: data.workers-count
-  - name: queues
-    objref:
-      kind: ConfigMap
-      name: redash-config
-      apiVersion: v1
-    fieldref:
-      fieldpath: data.queues
   - name: host
     objref:
       kind: ConfigMap
