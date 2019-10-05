@@ -19,5 +19,9 @@ images:
 replicas:
   - name: redash-web
     count: 2
-  - name: redash-worker
+  - name: redash-adhocworker
+    count: 3
+  - name: redash-scheduled
+    count: 3
+  - name: redash-scheduledworker
     count: 3
