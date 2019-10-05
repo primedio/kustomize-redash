@@ -1,27 +1,29 @@
 apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
-  name: redash-web
+  name: redash-scheduledworker
+  labels:
+    app.kubernetes.io/name: redash-scheduledworker
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app.kubernetes.io/name: redash-web
+      app.kubernetes.io/name: redash-scheduledworker
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: redash-web
+        app.kubernetes.io/name: redash-scheduledworker
     spec:
       restartPolicy: Always
       terminationGracePeriodSeconds: 30
       containers:
-        - name: redash-web
+        - name: redash-scheduledworker
           image: redash/redash
           imagePullPolicy: IfNotPresent
           command: ["/app/bin/docker-entrypoint"]
-          args: ["server"]
+          args: ["scheduler"]
           ports:
-            - name: "redash"
+            - name: "insights"
               containerPort: 5000
               protocol: TCP
           readinessProbe:
@@ -29,8 +31,8 @@ spec:
              command:
              - pgrep
              - -f
-             - gunicorn
-            initialDelaySeconds: 30
+             - worker
+            initialDelaySeconds: 15
             timeoutSeconds: 5
             periodSeconds: 10
             successThreshold: 1
@@ -40,8 +42,8 @@ spec:
              command:
              - pgrep
              - -f
-             - gunicorn
-            initialDelaySeconds: 30
+             - worker
+            initialDelaySeconds: 15
             timeoutSeconds: 1
             periodSeconds: 10
             successThreshold: 1
@@ -51,26 +53,16 @@ spec:
               value: "0"
             - name: REDASH_LOG_LEVEL
               value: $(loglevel)
-            - name: REDASH_HOST
-              value: $(host)
             - name: REDASH_REDIS_URL
               value: $(redis-url)
             - name: REDASH_DATABASE_URL
               value: $(database-url)
-            - name: REDASH_MAIL_SERVER
-              value: $(mail-server)
-            - name: REDASH_MAIL_PORT
-              value: $(mail-server-port)
-            - name: REDASH_MAIL_USERNAME
-              value: $(mail-server-username)
-            - name: REDASH_MAIL_PASSWORD
-              value: $(mail-server-password)
-            - name: REDASH_MAIL_DEFAULT_SENDER
-              value: $(mail-server-default-sender)
             - name: REDASH_COOKIE_SECRET
               value: $(cookie-secret)
-            - name: REDASH_WEB_WORKERS
-              value: $(web-workers)
+            - name: QUEUES
+              value: scheduled_queries
+            - name: WORKERS_COUNT
+              value: $(workers-count)
             - name: REDASH_QUERY_TIMEOUT
               value: $(query-timeout)
             - name: REDASH_SECRET_KEY
@@ -81,4 +73,4 @@ spec:
               cpu: "500m"
             limits:
               memory: "128Mi"
-              cpu: "150m"      
+              cpu: "150m"
